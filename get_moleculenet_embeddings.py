@@ -6,7 +6,7 @@ import pandas as pd
 from pandarallel import pandarallel
 import to_selfies
 import torch
-from transformers import RobertaTokenizer, RobertaModel, RobertaConfig
+from transformers import RobertaTokenizer, RobertaModel, RobertaConfig, AutoTokenizer, AutoModel
 
 import argparse
 
@@ -26,6 +26,8 @@ config.output_hidden_states = True
 tokenizer = RobertaTokenizer.from_pretrained("./data/RobertaFastTokenizer")
 model = RobertaModel.from_pretrained(model_file, config=config)
 
+scibert_tokenizer = AutoTokenizer.from_pretrained("allenai/scibert_scivocab_uncased")
+scibert_model = AutoModel.from_pretrained("allenai/scibert_scivocab_uncased")
 
 def generate_moleculenet_selfies(dataset_file):
     """
@@ -115,7 +117,7 @@ def generate_embeddings(model_file, args):
 
                 # scibert embeddings
                 print(f'\n\nGenerating SciBERT embeddings')
-                dataset_df["text_embeddings"] = dataset_df.description.parallel_apply(get_text_embeddings, args=(tokenizer, model))
+                dataset_df["text_embeddings"] = dataset_df.description.parallel_apply(get_text_embeddings, args=(scibert_tokenizer, scibert_model))
                 
                 dataset_df.drop(columns=["selfies", "description"], inplace=True) # not interested in selfies data anymore, only class and the embedding
                 file_name = f"{dataset_name}_{model_name}_embeddings.csv"
