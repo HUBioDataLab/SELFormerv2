@@ -10,6 +10,9 @@ from transformers import RobertaTokenizer, RobertaModel, RobertaConfig, AutoToke
 
 import argparse
 
+import numpy as np
+from unimol_tools import UniMolRepr
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", required=True, metavar="/path/to/dataset/", help="Path of the input MoleculeNet datasets.")
 parser.add_argument("--model_file", required=True, metavar="<str>", type=str, help="Name of the pretrained model.")
@@ -28,6 +31,7 @@ model = RobertaModel.from_pretrained(model_file, config=config)
 
 scibert_tokenizer = AutoTokenizer.from_pretrained("allenai/scibert_scivocab_uncased")
 scibert_model = AutoModel.from_pretrained("allenai/scibert_scivocab_uncased")
+unimol_model = UniMolRepr(data_type='molecule', remove_hs=False)
 
 def generate_moleculenet_selfies(dataset_file):
     """
@@ -85,6 +89,16 @@ def get_text_embeddings(text, tokenizer, model):
         
     return text_out.tolist()
 
+def get_unimol_embeddings(smiles, model):
+
+    unimol_repr = model.get_repr(smiles, return_atomic_reprs=True) # UniMolRepr model
+    
+    # CLS token repr
+    print(np.array(unimol_repr['cls_repr']).shape)
+    
+    # atomic level repr, align with rdkit mol.GetAtoms()
+    print(np.array(unimol_repr['atomic_reprs']).shape)
+
 
 def generate_embeddings(model_file, args):
 
@@ -118,6 +132,9 @@ def generate_embeddings(model_file, args):
                 # scibert embeddings
                 print(f'\n\nGenerating SciBERT embeddings')
                 dataset_df["text_embeddings"] = dataset_df.description.parallel_apply(get_text_embeddings, args=(scibert_tokenizer, scibert_model))
+                
+                print(f'\n\nGenerating UniMol embeddings')
+                dataset_df["unimol_embeddings"] = dataset_df.selfies.parallel_apply(get_unimol_embeddings, args=(unimol_model,))
                 
                 dataset_df.drop(columns=["selfies", "description"], inplace=True) # not interested in selfies data anymore, only class and the embedding
                 file_name = f"{dataset_name}_{model_name}_embeddings.csv"
