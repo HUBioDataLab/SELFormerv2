@@ -7,6 +7,7 @@ from pandarallel import pandarallel
 import to_selfies
 import torch
 from transformers import RobertaTokenizer, RobertaModel, RobertaConfig, AutoTokenizer, AutoModel
+from dmgi_model import load_heterodata, load_dmgi_model
 
 import argparse
 
@@ -16,6 +17,8 @@ from unimol_tools import UniMolRepr
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_path", required=True, metavar="/path/to/dataset/", help="Path of the input MoleculeNet datasets.")
 parser.add_argument("--model_file", required=True, metavar="<str>", type=str, help="Name of the pretrained model.")
+parser.add_argument("--heterodata_path", required=True, metavar="/path/to/heterodata/", help="Path of the input heterodata.")
+parser.add_argument("--dmgi_model", required=True, metavar="/path/to/dmgi_model/", help="Path of the input dmgi_model.")
 
 args = parser.parse_args()
 
@@ -32,6 +35,9 @@ model = RobertaModel.from_pretrained(model_file, config=config)
 scibert_tokenizer = AutoTokenizer.from_pretrained("allenai/scibert_scivocab_uncased")
 scibert_model = AutoModel.from_pretrained("allenai/scibert_scivocab_uncased")
 unimol_model = UniMolRepr(data_type='molecule', remove_hs=False)
+
+heterodata = load_heterodata(args.heterodata_path)               
+dmgi_model = load_dmgi_model(args.dmgi_model, heterodata)
 
 def generate_moleculenet_selfies(dataset_file):
     """
@@ -99,9 +105,17 @@ def get_unimol_embeddings(smiles, model):
     # atomic level repr, align with rdkit mol.GetAtoms()
     print(np.array(unimol_repr['atomic_reprs']).shape)
 
+def get_kg_embeddings(chembl_id, heterodata, dmgi_model):
+    
+    node_idx = heterodata['Compound'].id_mapping[chembl_id] if chembl_id in heterodata['Compound'].id_mapping else None
+    if node_idx:    
+        output = dmgi_model.Z[node_idx]
+    else:
+        output = torch.zeros(64)
+        
+    return output.tolist()
 
-def generate_embeddings(model_file, args):
-
+def generate_embeddings(model_file, heterodata, dmgi_model, args):
     root = args.dataset_path
     model_name = model_file.split("/")[-1]
 
@@ -136,7 +150,10 @@ def generate_embeddings(model_file, args):
                 print(f'\n\nGenerating UniMol embeddings')
                 dataset_df["unimol_embeddings"] = dataset_df.selfies.parallel_apply(get_unimol_embeddings, args=(unimol_model,))
                 
-                dataset_df.drop(columns=["selfies", "description"], inplace=True) # not interested in selfies data anymore, only class and the embedding
+                print(f'\n\nGenerating KG embeddings')
+                dataset_df["kg_embeddings"] = dataset_df.chembl_id.parallel_apply(get_kg_embeddings, args=(heterodata, dmgi_model))
+                
+                dataset_df.drop(columns=["selfies", "description", "chembl_id"], inplace=True) # not interested in selfies data anymore, only class and the embedding
                 file_name = f"{dataset_name}_{model_name}_embeddings.csv"
 
                 # save embeddings to file
@@ -148,4 +165,4 @@ def generate_embeddings(model_file, args):
                 print(f'Saved to {os.path.join(path, file_name)}\n')
 
 
-generate_embeddings(model_file, args)
+generate_embeddings(model_file, heterodata, dmgi_model, args)
