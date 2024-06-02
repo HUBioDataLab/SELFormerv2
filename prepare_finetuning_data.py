@@ -78,7 +78,7 @@ def train_val_test_split_with_embs(path, target_column_number=1, scaffold_split=
         val, test = train_test_split(val, test_size=0.5, random_state=42)
         
         # columns = ["smiles", "target", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
-        columns = ["smiles", "target", "sequence_embeddings", "text_embeddings", "kg_embeddings"]
+        columns = ["smiles", "target", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
         train = train[columns]
         val = val[columns]
         test = test[columns]
