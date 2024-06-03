@@ -61,6 +61,7 @@ def train_val_test_split_with_embs(path, target_column_number=1, scaffold_split=
         molecule_list = []
         for _, row in main_df.iterrows():
             target_dict = {'target': row['target'],
+                           'selfies': row['selfies'],
                            'sequence_embeddings': row['sequence_embeddings'],
                            'text_embeddings': row['text_embeddings'],
                            'unimol_embeddings': row['unimol_embeddings'],
@@ -77,8 +78,7 @@ def train_val_test_split_with_embs(path, target_column_number=1, scaffold_split=
         train, val = train_test_split(main_df, test_size=0.2, random_state=42)
         val, test = train_test_split(val, test_size=0.5, random_state=42)
         
-        # columns = ["smiles", "target", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
-        columns = ["smiles", "target", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
+        columns = ["smiles", "target", "selfies", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
         train = train[columns]
         val = val[columns]
         test = test[columns]

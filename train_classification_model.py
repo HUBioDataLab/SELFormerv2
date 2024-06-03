@@ -150,26 +150,22 @@ else:  # scaffold split
 
     # turn train, val, test to pandas dataframe
 
-    train_smiles = [item[0] for item in train.smiles()]
-    validation_smiles = [item[0] for item in val.smiles()]
-    test_smiles = [item[0] for item in test.smiles()]
-    
     # turn train.targets into list of lists
     train_targets = [list(item.values()) for item in train.targets()]
     validation_targets = [list(item.values()) for item in val.targets()]
     test_targets = [list(item.values()) for item in test.targets()]
     
-    column_list = ["smiles", "target", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
-    train_df = pd.DataFrame(np.column_stack([train_smiles, train_targets]), columns=column_list)
-    validation_df = pd.DataFrame(np.column_stack([validation_smiles, validation_targets]), columns=column_list)
-    test_df = pd.DataFrame(np.column_stack([test_smiles, test_targets]), columns=column_list)
+    column_list = ["target", "selfies", "sequence_embeddings", "text_embeddings", "unimol_embeddings", "kg_embeddings"]
+    train_df = pd.DataFrame(np.column_stack([train_targets]), columns=column_list)
+    validation_df = pd.DataFrame(np.column_stack([validation_targets]), columns=column_list)
+    test_df = pd.DataFrame(np.column_stack([test_targets]), columns=column_list)
     
     assert len(train_df['sequence_embeddings'].values[0]) + len(train_df['text_embeddings'].values[0]) + len(train_df['unimol_embeddings'].values[0]) + len(train_df['kg_embeddings'].values[0]) == 2112, "Embeddings length mismatch"
 
 test_y = test_df['target'].tolist()
 
 MAX_LEN = 128
-train_examples = (train_df['smiles'].astype(str).tolist(), 
+train_examples = (train_df['selfies'].astype(str).tolist(), 
                 train_df['target'].tolist(),
                 train_df['sequence_embeddings'].tolist(),
                 train_df['text_embeddings'].tolist(),
@@ -178,7 +174,7 @@ train_examples = (train_df['smiles'].astype(str).tolist(),
                   )
 train_dataset = SELFIESTransfomers_Dataset(train_examples, tokenizer, MAX_LEN)
 
-validation_examples = (validation_df['smiles'].astype(str).tolist(),
+validation_examples = (validation_df['selfies'].astype(str).tolist(),
                           validation_df['target'].tolist(),
                           validation_df['sequence_embeddings'].tolist(),
                           validation_df['text_embeddings'].tolist(),
@@ -188,7 +184,7 @@ validation_examples = (validation_df['smiles'].astype(str).tolist(),
 
 validation_dataset = SELFIESTransfomers_Dataset(validation_examples, tokenizer, MAX_LEN)
 
-test_examples = (test_df['smiles'].astype(str).tolist(),
+test_examples = (test_df['selfies'].astype(str).tolist(),
                     test_df['target'].tolist(),
                     test_df['sequence_embeddings'].tolist(),
                     test_df['text_embeddings'].tolist(),
