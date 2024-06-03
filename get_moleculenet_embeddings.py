@@ -154,11 +154,11 @@ def generate_embeddings(model_file, heterodata, dmgi_model, args):
                 dataset_df["kg_embeddings"] = dataset_df.chembl_id.parallel_apply(get_kg_embeddings, args=(heterodata, dmgi_model))
                 
                 dataset_df.drop(columns=["selfies", "description", "chembl_id"], inplace=True) # not interested in selfies data anymore, only class and the embedding
-                file_name = f"{dataset_name}_{model_name}_embeddings.csv"
+                file_name = f"{dataset_name}_{model_name}_embeddings.pkl"
 
                 # save embeddings to file
                 path = os.path.dirname(selfies_file)
-                dataset_df.to_csv(os.path.join(path, file_name), index=False)
+                dataset_df.to_pickle(os.path.join(path, file_name))
                 t1 = time()
 
                 print(f'Finished in {round((t1-t0) / 60, 2)} mins')
