@@ -63,7 +63,7 @@ def generate_moleculenet_selfies(dataset_file):
     dataset_df.selfies = dataset_df.selfies.parallel_apply(to_selfies.to_selfies)
 
     dataset_df.drop(dataset_df[dataset_df[smiles_column] == dataset_df.selfies].index, inplace=True)
-    dataset_df.drop(columns=[smiles_column], inplace=True)
+    # dataset_df.drop(columns=[smiles_column], inplace=True)
     out_name = dataset_name + "_selfies.csv"
 
     # save selfies to file
@@ -153,7 +153,7 @@ def generate_embeddings(model_file, heterodata, dmgi_model, args):
                 print(f'\n\nGenerating KG embeddings')
                 dataset_df["kg_embeddings"] = dataset_df.chembl_id.parallel_apply(get_kg_embeddings, args=(heterodata, dmgi_model))
                 
-                dataset_df.drop(columns=["selfies", "description", "chembl_id"], inplace=True) # not interested in selfies data anymore, only class and the embedding
+                dataset_df.drop(columns=["description", "chembl_id"], inplace=True) # not interested in selfies data anymore, only class and the embedding
                 file_name = f"{dataset_name}_{model_name}_embeddings.pkl"
 
                 # save embeddings to file
