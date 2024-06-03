@@ -253,6 +253,7 @@ training_args = TrainingArguments(
     save_total_limit=1,
 )
 
+print(f"\nHyperparameters: Training epochs: {TRAIN_EPOCHS}, Learning rate: {LEARNING_RATE}, Weight decay: {WEIGHT_DECAY}, Train batch size: {TRAIN_BATCH_SIZE}, Validation batch size: {VALID_BATCH_SIZE}\n")
 trainer = Trainer(model=model, args=training_args, train_dataset=train_dataset, eval_dataset=validation_dataset, compute_metrics=compute_metrics)  # the instantiated 🤗 Transformers model to be trained  # training arguments, defined above  # training dataset  # evaluation dataset
 
 metrics = trainer.train()
