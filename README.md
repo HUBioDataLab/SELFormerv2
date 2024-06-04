@@ -1,5 +1,11 @@
 # SELFORMERv2: A multimodal approach to molecular property prediction problems using SELFIES, 3D graphs and knowledge graph embeddings
 
+## Contents
+- [Getting Started](#getting-started)
+- [How to Reproduce the Results](#how-to-reproduce-the-results)
+    1. [Generating Multimodal Embeddings Using Pre-trained Models](#1-generating-multimodal-embeddings-using-pre-trained-models)
+    2. [Training Multimodal Classification Model](#training-multimodal-classification-model)
+- [Generating Predictions for New Molecules](#generating-predictions-for-new-molecules)
 
 ## Getting Started
 **Step 1.** We recommend the Conda platform for installing dependencies. Following the installation of Conda, please create and activate an environment with dependencies as defined below:
@@ -16,7 +22,11 @@ conda env update --file data/requirements.yml
 
 <br/>
 
-## Generating Multimodal Embeddings Using Pre-trained Models
+## How to Reproduce the Results
+
+In this section, we provide a step-by-step guide to reproduce the results of the SELFormerv2 model for the BBBP, BACE, and HIV datasets. The following steps are required to generate multimodal embeddings using pre-trained models, and train the multimodal classification model.
+
+### 1. Generating Multimodal Embeddings Using Pre-trained Models
 
 SELFormerv2 utilises multiple molecular features including SELFIES notations, 3D molecular structures, textual descriptions, and knowledge graphs. Each molecular feature is encoded using specialised pre-trained models; namely, SELFormer for SELFIES notations, Uni-Mol for 3D structures, SciBERT for textual descriptions, and DMGI for the knowledge graph. For generating embeddings for each modality, the following steps are required:
 
@@ -43,7 +53,7 @@ Generated embeddings can be used for training the multimodal classification mode
 
 <br/>
 
-## Training Multimodal Classification Model
+### 2. Training Multimodal Classification Model
 For training the multimodal classification model for a dataset, you first need to generate embeddings for the dataset using the pre-trained models (please refer to the section "Generating Multimodal Embeddings Using Pre-trained Models"). After generating embeddings, you can train the multimodal classification model using the following command:
 
 ```
