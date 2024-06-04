@@ -16,9 +16,8 @@ conda activate SELFormerv2_env
 conda env update --file data/requirements.yml
 ```
 
-**Step 2.** PyTorch Geometric may require additional installation steps. Please refer to the [official documentation](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html).
+**Step 2.** PyTorch Geometric and Uni-Mol may require manual installation steps. Please refer to the [official PyTorch Geometric documentation](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html) and [Uni-Mol repository](https://github.com/dptech-corp/Uni-Mol).
 
-**Step 3.** TODO: unimol installation
 
 <br/>
 
