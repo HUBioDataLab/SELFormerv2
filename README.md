@@ -57,10 +57,13 @@ Generated embeddings can be used for training the multimodal classification mode
 For training the multimodal classification model for a dataset, you first need to generate embeddings for the dataset using the pre-trained models (please refer to the section "Generating Multimodal Embeddings Using Pre-trained Models"). After generating embeddings, you can train the multimodal classification model using the following command:
 
 ```
-python3 train_classification_model.py --model=data/pretrained_models/modelO --tokenizer=data/RobertaFastTokenizer --dataset=data/finetuning_datasets/classification/bbbp/bbbp_modelO_embeddings.pkl --save_to=data/finetuned_models/bbbp --target_column_id=1 --use_scaffold=1 --train_batch_size=16 --validation_batch_size=8 --num_epochs=25 --lr=5e-5 --wd=0
+python3 train_classification_model.py --model=data/pretrained_models/modelO --tokenizer=data/RobertaFastTokenizer --dataset=data/finetuning_datasets/classification/bbbp/bbbp_modelO_embeddings.pkl --save_to=data/finetuned_models/bbbp --target_column_id=1 --use_scaffold=1 --train_batch_size=16 --validation_batch_size=8 --num_epochs=25 --lr=1e-5 --wd=0.01
 ```
 
-TODO: update hyperparameters
+**Optimal hyperparameters to reproduce the results for each dataset are as follows:**
+- BBBP: `--train_batch_size=16 --validation_batch_size=8 --num_epochs=25 --lr=1e-5 --wd=0.01`
+- BACE: `--train_batch_size=16 --validation_batch_size=8 --num_epochs=25 --lr=0.001 --wd=0.01`
+- HIV: `--train_batch_size=8 --validation_batch_size=8 --num_epochs=50 --lr=1e-5 --wd=0.1`
 
 This command will train the multimodal classification model using the embeddings generated for the dataset. The trained model will be saved in the specified directory. The model can be used for generating predictions for new molecules.
 
